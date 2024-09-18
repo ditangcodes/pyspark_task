@@ -1,0 +1,91 @@
+[
+  {
+    "event_id": "1",
+    "user": {
+      "user_id": "123",
+      "location": {
+        "country": "UK",
+        "city": "London"
+      },
+      "device_type": "mobile"
+    },
+    "event_details": {
+      "event_type": "page_view",
+      "page_info": {
+        "page_url": "/recipes/vegan-pasta",
+        "page_category": "vegan"
+      }
+    },
+    "timestamp": "2024-09-06T14:45:00"
+  },
+  {
+    "event_id": "2",
+    "user": {
+      "user_id": "123",
+      "location": {
+        "country": "UK",
+        "city": "London"
+      },
+      "device_type": "mobile"
+    },
+    "event_details": {
+      "event_type": "click",
+      "page_info": {
+        "page_url": "/recipes/vegan-pasta",
+        "page_category": "vegan"
+      },
+      "element_clicked": "add_to_favorites"
+    },
+    "timestamp": "2024-09-06T14:46:30"
+  },
+  {
+    "event_id": "3",
+    "user": {
+      "user_id": "456",
+      "location": {
+        "country": "US",
+        "city": "New York"
+      },
+      "device_type": "desktop"
+    },
+    "event_details": {
+      "event_type": "page_view",
+      "page_info": {
+        "page_url": "/recipes/chicken-salad",
+        "page_category": "non-vegan"
+      }
+    },
+    "timestamp": "2024-09-06T14:48:00"
+  },
+  {
+    "event_id": "4",
+    "user": {
+      "user_id": "123",
+      "location": {
+        "country": "UK",
+        "city": "London"
+      },
+      "device_type": "mobile"
+    },
+    "event_details": {
+      "event_type": "order",
+      "order_info": {
+        "order_id": "A987",
+        "order_value": 29.99,
+        "items": [
+          {
+            "item_id": "101",
+            "name": "Vegan Pasta Kit",
+            "quantity": 1
+          },
+          {
+            "item_id": "102",
+            "name": "Smoothie Kit",
+            "quantity": 1
+          }
+        ]
+      }
+    },
+    "timestamp": "2024-09-06T14:50:00"
+  }
+]
