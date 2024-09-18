@@ -1,51 +1,94 @@
 import pyspark
+import json
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, explode
+from pyspark.sql.types import StructType, ArrayType
 
-# Step 1: Create a Spark session
-spark = SparkSession.builder.appName("Gousto Project").getOrCreate()
+# Start Spark Session
+spark = SparkSession.builder \
+    .appName("Gousto Pair Programming") \
+    .config("spark.memory.offHeap.enabled", "true") \
+    .config("spark.memory.offHeap.size", "10g") \
+    .getOrCreate()
 
-# Step 2: Read the JSON file into a DataFrame
-json_filepath = "../src/fake_web_events.json"
-
-# Use DROPMALFORMED to skip corrupted records
-df = spark.read.option("mode", "DROPMALFORMED").json(json_filepath)
-
-# Step 3: Inspect the schema and show some rows
+df = spark.read.option("multiline","true").json('fake_web_events.json')
 df.printSchema()
 df.show(truncate=False)
 
-# Step 4: Flatten the nested structure if schema is as expected
-flattened_df = df.select(
-    "event_id",
-    "user.user_id",
-    "user.location.country",
-    "user.location.city",
-    "user.device_type",
-    "event_details.event_type",
-    "event_details.page_info.page_url",
-    "event_details.page_info.page_category",
-    "event_details.order_info.order_id",
-    "event_details.order_info.order_value",
-    explode("event_details.order_info.items").alias("item")
-)
+def flatten_json(data, prefix=''):
+    """
+    Recursively unnests a nested JSON structure into individual columns.
+    
+    Args:
+        data (dict): The JSON data to unnest.
+        prefix (str): Prefix for column names (used for recursion).
+    
+    Returns:
+        dict: A flattened dictionary with unnested columns.
+    """
+    flattened_data = {}
+    if isinstance(data, dict):
+        for key, value in data.items():
+            new_key = f"{prefix}{key}"
+            if isinstance(value, dict):
+                # Recurse into nested dictionaries
+                flattened_data.update(flatten_json(value, prefix=new_key + "_"))
+            elif isinstance(value, list):
+                # Unnest lists (if needed)
+                for i, item in enumerate(value):
+                    flattened_data.update(flatten_json(item, prefix=new_key + str(i) + "_"))
+            else:
+                # Base case: scalar value
+                flattened_data[new_key] = value
+    elif isinstance(data, list):
+        # Handle a list of dictionaries (e.g., multiple events)
+        for i, event in enumerate(data):
+            flattened_data.update(flatten_json(event, prefix=f"event_{i}_"))
+    return flattened_data
 
-# Step 5: Select the individual fields from the exploded item
-final_df = flattened_df.select(
-    "event_id",
-    "user_id",
-    "country",
-    "city",
-    "device_type",
-    "event_type",
-    "page_url",
-    "page_category",
-    "order_id",
-    "order_value",
-    "item.item_id",
-    "item.name",
-    "item.quantity"
-)
+# Read the JSON data from the file
+with open("fake_web_events.json", "r") as json_file:
+    json_content = json.load(json_file)
 
-# Show the final flattened DataFrame
-final_df.show(truncate=False)
+# Call the flatten_json function
+flattened_result = flatten_json(json_content)
+
+# Print the flattened dictionary
+for key, value in flattened_result.items():
+    print(f"{key}: {value}")
+
+"""
+The Code:
+Show the function definition: def flatten_json(data, prefix=''):
+Inside the function:
+    Check if data is a dictionary or a list.
+If its a dictionary:
+    Iterate through key-value pairs.
+    If the value is a dictionary, recurse with a modified prefix.
+    If the value is a list, handle each item.
+    If its a scalar value, add it to the flattened dictionary.
+If its a list:
+    Iterate through each dictionary (representing an event).
+    Apply the same process recursively.
+Return the flattened dictionary.
+"""
+
+# 5. Flatten the DataFrame
+flattened_df = flatten_df(df)
+
+# Show the flattened structure to verify
+flattened_df.printSchema()
+flattened_df.show(truncate=False)
+
+# Count the number of events per user
+def count_events_per_user(flattened_df):
+    # Group by user_id and count the number of events
+    results_df = flattened_df.groupBy("user_user_id").agg(F.count("*").alias("event_count"))
+    results_df.show()
+
+# 7. Call the function to count events per user
+count_events_per_user(flattened_df)
+
+def sum_order_values_per_user(flattened_df):
+    results_df = flattened_df.groupBy('user_id').sum('order').collect()
+    results_df.show()

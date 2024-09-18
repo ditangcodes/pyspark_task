@@ -82,21 +82,21 @@ def count_total_order(df):
 # Call the function
 count_total_order(final_df)
 
-# # Task 4: Aggregate the number of clicks and page views per device type.
-# def total_number_of_clicks(df):
-#     #Filtering the Dataframe
-#     page_views_df = df.filter(df["event_type"] == "page_view")
-#     total_clicks_df = df.filter(df["event_type"] == "click")
-#     # Aggregating the total number of clicks and page views
-#     page_view_count_df = page_views_df.groupBy("device_type").agg(F.count("*").alias("Total Page Views"))
-#     total_clicks_df = total_clicks_df.groupBy("device_type").agg(F.count("*").alias("Total Clicks"))
+# Task 4: Aggregate the number of clicks and page views per device type.
+def total_number_of_clicks(df):
+    #Filtering the Dataframe
+    page_views_df = df.filter(df["event_type"] == "page_view")
+    total_clicks_df = df.filter(df["event_type"] == "click")
+    # Aggregating the total number of clicks and page views
+    page_view_count_df = page_views_df.groupBy("device_type").agg(F.count("*").alias("Total Page Views"))
+    total_clicks_df = total_clicks_df.groupBy("device_type").agg(F.count("*").alias("Total Clicks"))
     
-#     # Join Both dataframes on device type
-#     total_count_df = page_view_count_df.join(total_clicks_df, on="device_type", how='outer')
+    # Join Both dataframes on device type
+    total_count_df = page_view_count_df.join(total_clicks_df, on="device_type", how='outer')
     
-#     total_count_df.show(truncate=False)
-# #Call the function
-# total_number_of_clicks(final_df)
+    total_count_df.show(truncate=False)
+#Call the function
+total_number_of_clicks(final_df)
 
 
 def total_number_of_click(df):

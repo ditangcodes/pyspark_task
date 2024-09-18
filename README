@@ -1,0 +1,9 @@
+Query Insights:
+
+Task 1: Count the total number of events per user, breaking it down by event_type.
+Task 2: Identify the most popular page categories (e.g., "vegan" vs. "non-vegan").
+Task 3: Calculate the total order value per country.
+Task 4: Extract information about the items purchased in orders (item names, quantities, etc.).
+Optimize for Performance:
+
+Partition data by event_type or user_id for efficient querying.
